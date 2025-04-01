@@ -80,4 +80,4 @@ module.exports = {
 }
 
 
-/***/
+/** @type {import('tailwindcss').Config} */
