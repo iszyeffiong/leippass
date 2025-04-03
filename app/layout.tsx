@@ -17,6 +17,10 @@ const risque = Risque({
 export const metadata: Metadata = {
   title: "LeipPass - Coming Soon",
   description: "Unlocking a new era",
+  icons: {
+    icon: "/images/leippass-logo.png",
+    apple: "/images/leippass-logo.png",
+  },
     generator: 'v0.dev'
 }
 

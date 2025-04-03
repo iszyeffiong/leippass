@@ -15,7 +15,7 @@ import {
   DialogClose,
 } from "@/components/ui/dialog"
 import { Checkbox } from "@/components/ui/checkbox"
-import { Twitter, Copy, Check, Share2, X } from 'lucide-react'
+import { Twitter, Copy, Check, Share2, X } from "lucide-react"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { useSearchParams } from "next/navigation"
 
@@ -51,7 +51,7 @@ export default function WaitlistForm() {
       return `https://leippass.vercel.app/waitlist?ref=${referralCode}`
     }
     if (!username) return "https://leippass.vercel.app/waitlist"
-    return `https://leippass.vercel.app/waitlist?ref=${encodeURIComponent(username)}`
+    return `https://leippass.vercel.app/waitlist?ref=${encodeURIComponent(username.toLowerCase().replace(/[^a-z0-9]/g, ""))}`
   }
 
   useEffect(() => {
