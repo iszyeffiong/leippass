@@ -134,11 +134,25 @@ export default function WaitlistForm() {
         }),
       })
 
-      const data = await response.json()
-
+      // Check if response is ok before trying to parse JSON
       if (!response.ok) {
-        throw new Error(data.error || "Failed to join waitlist")
+        let errorMessage = "Failed to join waitlist"
+        try {
+          const errorData = await response.json()
+          errorMessage = errorData.error || errorMessage
+        } catch (jsonError) {
+          // If JSON parsing fails, use text or status
+          try {
+            errorMessage = (await response.text()) || `Error: ${response.status}`
+          } catch (textError) {
+            errorMessage = `Error: ${response.status}`
+          }
+        }
+        throw new Error(errorMessage)
       }
+
+      // Parse JSON only if response is ok
+      const data = await response.json()
 
       // Set the referral code from the response
       if (data.referralCode) {
@@ -147,6 +161,7 @@ export default function WaitlistForm() {
 
       setSubmitted(true)
     } catch (err: any) {
+      console.error("Form submission error:", err)
       setError(err.message || "Something went wrong. Please try again.")
     } finally {
       setIsSubmitting(false)

@@ -25,11 +25,21 @@ export async function connectToDatabase() {
   if (!cached.promise) {
     const opts = {
       bufferCommands: false,
+      serverSelectionTimeoutMS: 5000, // Timeout after 5s instead of 30s
+      maxPoolSize: 10, // Maintain up to 10 socket connections
     }
 
-    cached.promise = mongoose.connect(MONGODB_URI!, opts).then((mongoose) => {
-      return mongoose
-    })
+    cached.promise = mongoose
+      .connect(MONGODB_URI!, opts)
+      .then((mongoose) => {
+        console.log("MongoDB connected successfully")
+        return mongoose
+      })
+      .catch((err) => {
+        console.error("MongoDB connection error:", err)
+        cached.promise = null
+        throw err
+      })
   }
 
   try {

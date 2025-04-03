@@ -62,9 +62,9 @@
     "nodemailer": "latest",
     "@supabase/supabase-js": "latest",
     "next-auth": "latest",
-    "mongoose": "latest",
+    "json2csv": "latest",
     "nanoid": "latest",
-    "json2csv": "latest"
+    "mongoose": "latest"
   },
   "devDependencies": {
     "@types/node": "^22",
