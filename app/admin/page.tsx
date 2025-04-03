@@ -17,11 +17,11 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination"
 import { Download, Search } from "lucide-react"
-import type { WaitlistUserType } from "@/lib/mongodb"
+import type { WaitlistUser } from "@/lib/kv"
 
 export default function AdminDashboard() {
   const { data: session, status } = useSession()
-  const [users, setUsers] = useState<WaitlistUserType[]>([])
+  const [users, setUsers] = useState<WaitlistUser[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState("")
   const [page, setPage] = useState(1)
@@ -146,7 +146,7 @@ export default function AdminDashboard() {
               </TableRow>
             ) : (
               users.map((user) => (
-                <TableRow key={user._id}>
+                <TableRow key={user.id}>
                   <TableCell>{user.email}</TableCell>
                   <TableCell>{user.username || "-"}</TableCell>
                   <TableCell>{user.referralCode}</TableCell>

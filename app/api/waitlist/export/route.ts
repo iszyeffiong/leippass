@@ -1,5 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server"
-import { connectToDatabase, WaitlistUser } from "@/lib/mongodb"
+import { getAllWaitlistUsers } from "@/lib/kv"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 import { parse } from "json2csv"
@@ -12,21 +12,19 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    await connectToDatabase()
+    // Get all users (no pagination for export)
+    const { users } = await getAllWaitlistUsers(1, 10000)
 
-    // Get all users
-    const users = await WaitlistUser.find({}).sort({ createdAt: -1 }).lean()
-
-    // Convert MongoDB _id to string and format dates
+    // Format users for CSV
     const formattedUsers = users.map((user) => ({
-      id: user._id.toString(),
+      id: user.id,
       email: user.email,
       username: user.username || "",
       referralCode: user.referralCode,
       referredBy: user.referredBy || "",
       referralCount: user.referralCount,
       completedTasks: user.completedTasks.join(", "),
-      createdAt: new Date(user.createdAt).toISOString(),
+      createdAt: user.createdAt,
     }))
 
     // Convert to CSV

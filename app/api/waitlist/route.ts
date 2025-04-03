@@ -1,6 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server"
-import { connectToDatabase, WaitlistUser } from "@/lib/mongodb"
-import { nanoid } from "nanoid"
+import { createWaitlistUser } from "@/lib/kv"
 
 export async function POST(request: NextRequest) {
   try {
@@ -21,47 +20,22 @@ export async function POST(request: NextRequest) {
     }
 
     try {
-      // Connect to database - wrap this in its own try/catch
-      await connectToDatabase()
-    } catch (dbError) {
-      console.error("Database connection error:", dbError)
-      return NextResponse.json({ error: "Database connection failed" }, { status: 500 })
-    }
-
-    try {
-      // Check if user already exists
-      const existingUser = await WaitlistUser.findOne({ email })
-      if (existingUser) {
-        return NextResponse.json({ error: "Email already registered" }, { status: 400 })
-      }
-
-      // Generate a unique referral code
-      const referralCode = username ? `${username.toLowerCase().replace(/[^a-z0-9]/g, "")}-${nanoid(6)}` : nanoid(10)
-
-      // Insert new user
-      const newUser = new WaitlistUser({
+      // Create new user
+      const user = await createWaitlistUser({
         email,
         username: username || undefined,
-        referralCode,
-        referredBy: referredBy || undefined,
-        completedTasks: completedTasks || [],
+        referredBy,
+        completedTasks,
       })
-
-      await newUser.save()
-
-      // If this user was referred by someone, increment their referral count
-      if (referredBy) {
-        await WaitlistUser.findOneAndUpdate({ referralCode: referredBy }, { $inc: { referralCount: 1 } })
-      }
 
       return NextResponse.json({
         success: true,
         message: "Successfully joined waitlist",
-        referralCode,
+        referralCode: user.referralCode,
       })
-    } catch (dbOperationError) {
-      console.error("Database operation error:", dbOperationError)
-      return NextResponse.json({ error: "Failed to save user data" }, { status: 500 })
+    } catch (err: any) {
+      console.error("Error creating user:", err)
+      return NextResponse.json({ error: err.message || "Failed to join waitlist" }, { status: 400 })
     }
   } catch (error) {
     console.error("Waitlist registration error:", error)
