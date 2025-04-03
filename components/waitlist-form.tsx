@@ -15,7 +15,7 @@ import {
   DialogClose,
 } from "@/components/ui/dialog"
 import { Checkbox } from "@/components/ui/checkbox"
-import { Twitter, Copy, Check, Share2, X } from "lucide-react"
+import { Twitter, Copy, Check, Share2, X } from 'lucide-react'
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { useSearchParams } from "next/navigation"
 
@@ -120,6 +120,13 @@ export default function WaitlistForm() {
         .filter(([_, completed]) => completed)
         .map(([task]) => task)
 
+      console.log("Submitting form with data:", {
+        email,
+        username: username || null,
+        referredBy,
+        completedTasks,
+      })
+
       // Submit to API
       const response = await fetch("/api/waitlist", {
         method: "POST",
@@ -134,25 +141,23 @@ export default function WaitlistForm() {
         }),
       })
 
-      // Check if response is ok before trying to parse JSON
-      if (!response.ok) {
-        let errorMessage = "Failed to join waitlist"
-        try {
-          const errorData = await response.json()
-          errorMessage = errorData.error || errorMessage
-        } catch (jsonError) {
-          // If JSON parsing fails, use text or status
-          try {
-            errorMessage = (await response.text()) || `Error: ${response.status}`
-          } catch (textError) {
-            errorMessage = `Error: ${response.status}`
-          }
-        }
-        throw new Error(errorMessage)
+      // Log the raw response
+      const responseText = await response.text()
+      console.log("Response status:", response.status)
+      console.log("Raw response:", responseText)
+
+      // Parse the response
+      let data
+      try {
+        data = JSON.parse(responseText)
+      } catch (err) {
+        throw new Error(`Failed to parse response: ${responseText}`)
       }
 
-      // Parse JSON only if response is ok
-      const data = await response.json()
+      // Handle error responses
+      if (!response.ok) {
+        throw new Error(data.error || data.details || `Error: ${response.status}`)
+      }
 
       // Set the referral code from the response
       if (data.referralCode) {

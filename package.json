@@ -64,8 +64,8 @@
     "mongoose": "latest",
     "@vercel/kv": "latest",
     "nanoid": "latest",
-    "@supabase/supabase-js": "latest",
-    "json2csv": "latest"
+    "json2csv": "latest",
+    "@supabase/supabase-js": "latest"
   },
   "devDependencies": {
     "@types/node": "^22",
