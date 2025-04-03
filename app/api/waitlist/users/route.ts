@@ -1,5 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server"
-import { getAllWaitlistUsers } from "@/lib/kv"
+import { supabaseAdmin } from "@/lib/supabase"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 
@@ -15,17 +15,39 @@ export async function GET(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams
     const page = Number.parseInt(searchParams.get("page") || "1")
     const limit = Number.parseInt(searchParams.get("limit") || "50")
+    const sortBy = searchParams.get("sortBy") || "created_at"
+    const order = searchParams.get("order") || "desc"
     const search = searchParams.get("search") || ""
 
-    // Get users with pagination
-    const { users, total } = await getAllWaitlistUsers(page, limit, search)
+    // Calculate pagination
+    const from = (page - 1) * limit
+    const to = from + limit - 1
+
+    // Build query
+    let query = supabaseAdmin
+      .from("waitlist_users")
+      .select("*", { count: "exact" })
+      .order(sortBy, { ascending: order === "asc" })
+      .range(from, to)
+
+    // Add search if provided
+    if (search) {
+      query = query.or(`email.ilike.%${search}%,username.ilike.%${search}%`)
+    }
+
+    const { data, count, error } = await query
+
+    if (error) {
+      console.error("Error fetching users:", error)
+      return NextResponse.json({ error: "Failed to fetch users" }, { status: 500 })
+    }
 
     return NextResponse.json({
-      users,
-      total,
+      users: data,
+      total: count,
       page,
       limit,
-      totalPages: Math.ceil(total / limit),
+      totalPages: Math.ceil((count || 0) / limit),
     })
   } catch (error) {
     console.error("Error in waitlist users API:", error)

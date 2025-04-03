@@ -17,7 +17,7 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination"
 import { Download, Search } from "lucide-react"
-import type { WaitlistUser } from "@/lib/kv"
+import type { WaitlistUser } from "@/lib/supabase"
 
 export default function AdminDashboard() {
   const { data: session, status } = useSession()
@@ -46,7 +46,7 @@ export default function AdminDashboard() {
         const searchParams = new URLSearchParams({
           page: page.toString(),
           limit: "10",
-          sortBy: "createdAt",
+          sortBy: "created_at",
           order: "desc",
         })
 
@@ -149,10 +149,10 @@ export default function AdminDashboard() {
                 <TableRow key={user.id}>
                   <TableCell>{user.email}</TableCell>
                   <TableCell>{user.username || "-"}</TableCell>
-                  <TableCell>{user.referralCode}</TableCell>
-                  <TableCell>{user.referredBy || "-"}</TableCell>
-                  <TableCell className="text-right">{user.referralCount}</TableCell>
-                  <TableCell>{new Date(user.createdAt).toLocaleDateString()}</TableCell>
+                  <TableCell>{user.referral_code}</TableCell>
+                  <TableCell>{user.referred_by || "-"}</TableCell>
+                  <TableCell className="text-right">{user.referral_count}</TableCell>
+                  <TableCell>{new Date(user.created_at).toLocaleDateString()}</TableCell>
                 </TableRow>
               ))
             )}

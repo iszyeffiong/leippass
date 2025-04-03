@@ -1,5 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server"
-import { getAllWaitlistUsers } from "@/lib/kv"
+import { supabaseAdmin } from "@/lib/supabase"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 import { parse } from "json2csv"
@@ -12,33 +12,29 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    // Get all users (no pagination for export)
-    const { users } = await getAllWaitlistUsers(1, 10000)
+    // Get all users
+    const { data, error } = await supabaseAdmin
+      .from("waitlist_users")
+      .select("*")
+      .order("created_at", { ascending: false })
 
-    // Format users for CSV
-    const formattedUsers = users.map((user) => ({
-      id: user.id,
-      email: user.email,
-      username: user.username || "",
-      referralCode: user.referralCode,
-      referredBy: user.referredBy || "",
-      referralCount: user.referralCount,
-      completedTasks: user.completedTasks.join(", "),
-      createdAt: user.createdAt,
-    }))
+    if (error) {
+      console.error("Error fetching users for export:", error)
+      return NextResponse.json({ error: "Failed to export data" }, { status: 500 })
+    }
 
     // Convert to CSV
     const fields = [
       "id",
       "email",
       "username",
-      "referralCode",
-      "referredBy",
-      "referralCount",
-      "completedTasks",
-      "createdAt",
+      "referral_code",
+      "referred_by",
+      "referral_count",
+      "completed_tasks",
+      "created_at",
     ]
-    const csv = parse(formattedUsers, { fields })
+    const csv = parse(data, { fields })
 
     // Return as downloadable CSV
     return new NextResponse(csv, {
