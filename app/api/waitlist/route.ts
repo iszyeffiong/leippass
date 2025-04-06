@@ -14,7 +14,12 @@ export async function POST(request: NextRequest) {
     }
 
     const { email, username, referredBy, completedTasks } = body
-    console.log("Received submission:", { email, username, referredBy, completedTasksCount: completedTasks?.length })
+    console.log("Received submission:", {
+      email,
+      username,
+      referredBy,
+      completedTasksCount: completedTasks?.length,
+    })
 
     // Basic validation
     if (!email || !email.includes("@")) {
@@ -24,7 +29,24 @@ export async function POST(request: NextRequest) {
     // Check if Supabase is properly initialized
     if (!supabaseAdmin) {
       console.error("Supabase admin client is not initialized")
-      return NextResponse.json({ error: "Database connection error" }, { status: 500 })
+
+      // Log environment variables (without revealing full values)
+      const envStatus = {
+        NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL ? "Set" : "Not set",
+        NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ? "Set" : "Not set",
+        SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY ? "Set" : "Not set",
+      }
+
+      console.error("Environment variable check:", envStatus)
+
+      return NextResponse.json(
+        {
+          error: "Database connection error",
+          details: "Supabase admin client is not initialized. Please check your environment variables.",
+          envStatus,
+        },
+        { status: 500 },
+      )
     }
 
     // Check if user already exists
@@ -58,6 +80,10 @@ export async function POST(request: NextRequest) {
       .eq("referral_code", referralCode)
       .single()
 
+    if (codeError && codeError.code !== "PGRST116") {
+      console.error("Error checking existing referral code:", codeError)
+    }
+
     if (existingCode) {
       console.log("Referral code already exists, generating a unique one")
       // If username is already taken as a referral code, append a random string
@@ -90,7 +116,14 @@ export async function POST(request: NextRequest) {
     const formattedTasks = Array.isArray(completedTasks) ? completedTasks : []
 
     // Insert new user
-    console.log("Inserting new user...")
+    console.log("Inserting new user with data:", {
+      email,
+      username,
+      referral_code: referralCode,
+      referred_by: referredBy,
+      completed_tasks: formattedTasks,
+    })
+
     const { data: newUser, error: insertError } = await supabaseAdmin
       .from("waitlist_users")
       .insert([
@@ -119,23 +152,36 @@ export async function POST(request: NextRequest) {
     // If this user was referred by someone, increment their referral count
     if (referredBy) {
       console.log("Processing referral for:", referredBy)
+
+      // First, try to find the referrer by their referral code
       const { data: referrer, error: referrerError } = await supabaseAdmin
         .from("waitlist_users")
-        .select("id")
+        .select("id, referral_count")
         .eq("referral_code", referredBy)
         .single()
 
       if (referrerError) {
-        console.error("Error finding referrer:", referrerError)
-      }
+        console.error("Error finding referrer by referral_code:", referrerError)
 
-      if (referrer && !referrerError) {
-        console.log("Incrementing referral count for referrer:", referrer.id)
-        const { error: incrementError } = await supabaseAdmin.rpc("increment_referral_count", { user_id: referrer.id })
+        // If we can't find by referral_code, try by username (for backward compatibility)
+        console.log("Trying to find referrer by username:", referredBy)
+        const { data: referrerByUsername, error: usernameError } = await supabaseAdmin
+          .from("waitlist_users")
+          .select("id, referral_count")
+          .eq("username", referredBy)
+          .single()
 
-        if (incrementError) {
-          console.error("Error incrementing referral count:", incrementError)
+        if (usernameError) {
+          console.error("Error finding referrer by username:", usernameError)
+        } else if (referrerByUsername) {
+          // Found by username, update referral count
+          console.log("Found referrer by username:", referrerByUsername.id)
+          await updateReferralCount(referrerByUsername.id, referrerByUsername.referral_count)
         }
+      } else if (referrer) {
+        // Found by referral_code, update referral count
+        console.log("Found referrer by referral_code:", referrer.id)
+        await updateReferralCount(referrer.id, referrer.referral_count)
       }
     }
 
@@ -145,6 +191,23 @@ export async function POST(request: NextRequest) {
       message: "Successfully joined waitlist",
       referralCode,
     })
+  }
+
+  // Helper function to update referral count
+  async function updateReferralCount(referrerId: string, currentCount: number) {
+    console.log(`Updating referral count for user ${referrerId} from ${currentCount} to ${currentCount + 1}`)
+
+    // Direct update using the update method instead of RPC
+    const { error: updateError } = await supabaseAdmin
+      .from("waitlist_users")
+      .update({ referral_count: currentCount + 1 })
+      .eq("id", referrerId)
+
+    if (updateError) {
+      console.error("Error updating referral count:", updateError)
+    } else {
+      console.log("Referral count updated successfully")
+    }
   }
 }
 

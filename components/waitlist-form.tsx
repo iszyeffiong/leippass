@@ -169,7 +169,11 @@ export default function WaitlistForm() {
 
       // Handle error responses
       if (!response.ok) {
-        throw new Error(data.error || data.details || `Error: ${response.status}`)
+        if (data.details) {
+          throw new Error(`${data.error}: ${data.details}`)
+        } else {
+          throw new Error(data.error || `Error: ${response.status}`)
+        }
       }
 
       // Set the referral code from the response

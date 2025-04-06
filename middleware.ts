@@ -12,7 +12,12 @@ export function middleware(request: NextRequest) {
     pathname.startsWith("/images") ||
     pathname === "/favicon.ico" ||
     pathname === "/" ||
-    pathname === "/waitlist"
+    pathname === "/waitlist" ||
+    pathname === "/favicon.ico" ||
+    pathname === "/" ||
+    pathname === "/waitlist" ||
+    pathname === "/admin" ||
+    pathname.startsWith("/admin/")
   ) {
     return NextResponse.next()
   }
