@@ -23,6 +23,16 @@ export default function WaitlistForm() {
   const searchParams = useSearchParams()
   const referredBy = searchParams.get("ref")
 
+  // Get the current domain for referral links
+  const [domain, setDomain] = useState("leippass.vercel.app")
+
+  useEffect(() => {
+    // Update the domain when the component mounts
+    if (typeof window !== "undefined") {
+      setDomain(window.location.host)
+    }
+  }, [])
+
   const [isOpen, setIsOpen] = useState(false)
   const [email, setEmail] = useState("")
   const [username, setUsername] = useState("")
@@ -47,11 +57,14 @@ export default function WaitlistForm() {
     "I just joined the @leippass NFT waitlist! 🚀 The first DEPIN on @base—be part of the future. Check it out and join me in unlocking a new era! 🔑✨"
 
   const getReferralLink = () => {
+    const protocol = typeof window !== "undefined" ? window.location.protocol : "https:"
+    const baseUrl = `${protocol}//${domain}`
+
     if (referralCode) {
-      return `https://leippass.vercel.app/waitlist?ref=${referralCode}`
+      return `${baseUrl}/waitlist?ref=${referralCode}`
     }
-    if (!username) return "https://leippass.vercel.app/waitlist"
-    return `https://leippass.vercel.app/waitlist?ref=${encodeURIComponent(username.toLowerCase().replace(/[^a-z0-9]/g, ""))}`
+    if (!username) return `${baseUrl}/waitlist`
+    return `${baseUrl}/waitlist?ref=${encodeURIComponent(username.toLowerCase().replace(/[^a-z0-9]/g, ""))}`
   }
 
   useEffect(() => {
@@ -456,7 +469,7 @@ export default function WaitlistForm() {
                     <div className="relative mt-1">
                       <Input
                         id="success-referral-link"
-                        value={`https://leippass.vercel.app/waitlist?ref=${referralCode}`}
+                        value={getReferralLink()}
                         readOnly
                         className="pr-10 bg-gray-800/50 text-white dark:bg-gray-800/50 dark:text-white"
                       />
@@ -466,7 +479,7 @@ export default function WaitlistForm() {
                         size="icon"
                         className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white dark:text-gray-400 dark:hover:text-white"
                         onClick={() => {
-                          navigator.clipboard.writeText(`https://leippass.vercel.app/waitlist?ref=${referralCode}`)
+                          navigator.clipboard.writeText(getReferralLink())
                           setReferralCopied(true)
                           setTimeout(() => setReferralCopied(false), 2000)
                         }}

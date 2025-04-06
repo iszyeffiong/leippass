@@ -1,6 +1,7 @@
-import { redirect } from "next/navigation"
+import HomePage from "@/app/page"
 
 export default function CatchAllPage() {
-  redirect("/")
+  // Render the home page content but keep the current URL
+  return <HomePage />
 }
 
