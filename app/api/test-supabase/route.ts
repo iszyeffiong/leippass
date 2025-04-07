@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server"
-import { supabaseAdmin } from "@/lib/supabase"
+import { createClient } from "@supabase/supabase-js"
 
 export async function GET() {
   try {
@@ -12,20 +12,25 @@ export async function GET() {
 
     console.log("Environment variables status:", envStatus)
 
-    // Check if Supabase admin is initialized
-    if (!supabaseAdmin) {
-      console.error("Supabase admin client is not initialized")
+    // Create a fresh Supabase client for testing
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+    const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+
+    if (!supabaseUrl || !supabaseServiceKey) {
       return NextResponse.json(
         {
-          error: "Supabase admin not initialized",
+          error: "Missing environment variables",
           envStatus,
         },
         { status: 500 },
       )
     }
 
+    // Create a fresh client for this test
+    const supabase = createClient(supabaseUrl, supabaseServiceKey)
+
     // Try a simple query
-    const { data, error } = await supabaseAdmin.from("waitlist_users").select("count").limit(1)
+    const { data, error } = await supabase.from("waitlist_users").select("count").limit(1)
 
     if (error) {
       console.error("Supabase query error:", error)
