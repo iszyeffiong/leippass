@@ -58,7 +58,7 @@ export default function AnimatedBackground() {
 
   return (
     <div ref={containerRef} className="fixed inset-0 overflow-hidden pointer-events-none">
-      <div className="absolute inset-0 bg-background"></div>
+      <div className="absolute inset-0 dark:bg-black bg-white transition-colors duration-300"></div>
       <div className="floating-logo absolute opacity-5 dark:opacity-10">
         <Image src="/images/leippass-logo.png" alt="LeipPass Logo" width={200} height={200} />
       </div>

@@ -79,22 +79,20 @@
   font-family: var(--font-risque), serif;
 }
 
-/* Remove these conflicting styles that override the theme system */
-html,
-body {
-  /* Remove these lines as they override the theme */
-  /* background-color: black; */
-  /* color: white; */
+/* Custom styles for light/dark mode */
+:root {
+  color-scheme: light dark;
 }
 
-/* Remove these as they conflict with the theme system */
-/* .light {
+/* Force dark mode styles */
+.dark body {
+  background-color: black;
+  color: white;
+}
+
+/* Force light mode styles */
+.light body {
   background-color: white;
   color: black;
 }
-
-.dark {
-  background-color: black;
-  color: white;
-} */
 

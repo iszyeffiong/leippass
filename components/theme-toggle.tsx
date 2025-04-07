@@ -20,10 +20,13 @@ export function ThemeToggle() {
 
   return (
     <Button
-      variant="ghost"
+      variant="outline"
       size="icon"
-      className="fixed top-4 right-4 z-50 rounded-full bg-black/20 backdrop-blur-sm dark:bg-white/10"
-      onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+      className="fixed top-4 right-4 z-50 rounded-full bg-white/10 backdrop-blur-sm border-white/20 hover:bg-white/20 hover:text-white"
+      onClick={() => {
+        console.log("Current theme:", theme)
+        setTheme(theme === "dark" ? "light" : "dark")
+      }}
       aria-label="Toggle theme"
     >
       <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
@@ -31,3 +34,4 @@ export function ThemeToggle() {
     </Button>
   )
 }
+
