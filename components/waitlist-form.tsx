@@ -72,7 +72,7 @@ export default function WaitlistForm() {
 
     // Set up timers for each task
     Object.keys(timers).forEach((task) => {
-      if (timers[task as keyof typeof timers] > 0 && timers[task as keyof typeof timers] < 60) {
+      if (timers[task as keyof typeof timers] > 0 && timers[task as keyof typeof timers] < 120) {
         intervals[task] = setInterval(() => {
           setTimers((prev) => ({
             ...prev,
@@ -91,7 +91,7 @@ export default function WaitlistForm() {
   // Check if timers have reached 60 seconds (1 minute)
   useEffect(() => {
     Object.keys(timers).forEach((task) => {
-      if (timers[task as keyof typeof timers] >= 60 && !tasks[task as keyof typeof tasks]) {
+      if (timers[task as keyof typeof timers] >= 120 && !tasks[task as keyof typeof tasks]) {
         setTasks((prev) => ({
           ...prev,
           [task]: true,
@@ -283,7 +283,7 @@ export default function WaitlistForm() {
                           >
                             Click here to follow
                           </a>
-                          {timers.follow > 0 && timers.follow < 60 && (
+                          {timers.follow > 0 && timers.follow < 120 && (
                             <span className="text-xs text-gray-500 ml-2">(Verification in progress...)</span>
                           )}
                         </p>
@@ -319,7 +319,7 @@ export default function WaitlistForm() {
                           >
                             Click here to retweet
                           </a>
-                          {timers.retweet > 0 && timers.retweet < 60 && (
+                          {timers.retweet > 0 && timers.retweet < 120 && (
                             <span className="text-xs text-gray-500 ml-2">(Verification in progress...)</span>
                           )}
                         </p>
@@ -357,7 +357,7 @@ export default function WaitlistForm() {
                             >
                               Click here to tweet and tag friends
                             </a>
-                            {timers.tagFriends > 0 && timers.tagFriends < 60 && (
+                            {timers.tagFriends > 0 && timers.tagFriends < 120 && (
                               <span className="text-xs text-gray-500 ml-2">(Verification in progress...)</span>
                             )}
                           </p>
