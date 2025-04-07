@@ -1,49 +1,34 @@
-import type React from "react"
-import type { Metadata } from "next"
-import { Risque } from "next/font/google"
-import "./globals.css"
-import { ThemeProvider } from "@/components/theme-provider"
-import { ThemeToggle } from "@/components/theme-toggle"
-import AnimatedBackground from "@/components/animated-background"
-import { Providers } from "@/components/providers"
+"use client"
 
-const risque = Risque({
-  weight: "400",
-  subsets: ["latin"],
-  display: "swap",
-  variable: "--font-risque",
-})
+import { Moon, Sun } from "lucide-react"
+import { useTheme } from "next-themes"
+import { Button } from "@/components/ui/button"
+import { useEffect, useState } from "react"
 
-export const metadata: Metadata = {
-  title: "LeipPass - Coming Soon",
-  description: "Unlocking a new era",
-  icons: {
-    icon: "/images/leippass-logo.png",
-    apple: "/images/leippass-logo.png",
-  },
-    generator: 'v0.dev'
-}
+export function ThemeToggle() {
+  const { theme, setTheme } = useTheme()
+  const [mounted, setMounted] = useState(false)
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode
-}>) {
+  // Only show the toggle after component is mounted to avoid hydration mismatch
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  if (!mounted) {
+    return null
+  }
+
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className={`${risque.variable}`}>
-        <Providers>
-          <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
-            <AnimatedBackground />
-            <ThemeToggle />
-            {children}
-          </ThemeProvider>
-        </Providers>
-      </body>
-    </html>
+    <Button
+      variant="ghost"
+      size="icon"
+      className="fixed top-4 right-4 z-50 rounded-full bg-black/20 backdrop-blur-sm dark:bg-white/10"
+      onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+      aria-label="Toggle theme"
+    >
+      <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+      <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+    </Button>
   )
 }
 
-//jiop
-
-import './globals.css'

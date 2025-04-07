@@ -71,7 +71,7 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground transition-colors duration-300;
   }
 }
 
@@ -79,13 +79,16 @@
   font-family: var(--font-risque), serif;
 }
 
+/* Remove these conflicting styles that override the theme system */
 html,
 body {
-  background-color: black;
-  color: white;
+  /* Remove these lines as they override the theme */
+  /* background-color: black; */
+  /* color: white; */
 }
 
-.light {
+/* Remove these as they conflict with the theme system */
+/* .light {
   background-color: white;
   color: black;
 }
@@ -93,5 +96,5 @@ body {
 .dark {
   background-color: black;
   color: white;
-}
+} */
 

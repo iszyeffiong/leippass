@@ -2,9 +2,11 @@
 
 import { useEffect, useRef } from "react"
 import Image from "next/image"
+import { useTheme } from "next-themes"
 
 export default function AnimatedBackground() {
   const containerRef = useRef<HTMLDivElement>(null)
+  const { theme } = useTheme()
 
   useEffect(() => {
     const container = containerRef.current
@@ -56,7 +58,7 @@ export default function AnimatedBackground() {
 
   return (
     <div ref={containerRef} className="fixed inset-0 overflow-hidden pointer-events-none">
-      <div className="absolute inset-0 bg-black dark:bg-black"></div>
+      <div className="absolute inset-0 bg-background"></div>
       <div className="floating-logo absolute opacity-5 dark:opacity-10">
         <Image src="/images/leippass-logo.png" alt="LeipPass Logo" width={200} height={200} />
       </div>
