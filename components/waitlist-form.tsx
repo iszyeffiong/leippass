@@ -24,7 +24,7 @@ export default function WaitlistForm() {
   const referredBy = searchParams.get("ref")
 
   // Get the current domain for referral links
-  const [domain, setDomain] = useState("leippass.vercel.app")
+  const [domain, setDomain] = useState("leippass.xyz")
 
   useEffect(() => {
     // Update the domain when the component mounts
@@ -54,7 +54,7 @@ export default function WaitlistForm() {
   const [error, setError] = useState("")
 
   const tweetText =
-    "I just joined the @leippass NFT waitlist! 🚀 The first DEPIN on @base—be part of the future. Check it out and join me in unlocking a new era! 🔑✨"
+    "My signature tweet for the #Leipass Waitlist. @Leippass is building the first computing AI-powered social fi  on #LensChain. Join in let's Unlock A New Era"
 
   const getReferralLink = () => {
     const protocol = typeof window !== "undefined" ? window.location.protocol : "https:"
@@ -72,7 +72,7 @@ export default function WaitlistForm() {
 
     // Set up timers for each task
     Object.keys(timers).forEach((task) => {
-      if (timers[task as keyof typeof timers] > 0 && timers[task as keyof typeof timers] < 120) {
+      if (timers[task as keyof typeof timers] > 0 && timers[task as keyof typeof timers] < 30) {
         intervals[task] = setInterval(() => {
           setTimers((prev) => ({
             ...prev,
@@ -91,7 +91,7 @@ export default function WaitlistForm() {
   // Check if timers have reached 60 seconds (1 minute)
   useEffect(() => {
     Object.keys(timers).forEach((task) => {
-      if (timers[task as keyof typeof timers] >= 120 && !tasks[task as keyof typeof tasks]) {
+      if (timers[task as keyof typeof timers] >= 30 && !tasks[task as keyof typeof tasks]) {
         setTasks((prev) => ({
           ...prev,
           [task]: true,
@@ -283,7 +283,7 @@ export default function WaitlistForm() {
                           >
                             Click here to follow
                           </a>
-                          {timers.follow > 0 && timers.follow < 120 && (
+                          {timers.follow > 0 && timers.follow < 30 && (
                             <span className="text-xs text-gray-500 ml-2">(Verification in progress...)</span>
                           )}
                         </p>
@@ -311,7 +311,7 @@ export default function WaitlistForm() {
                         </Label>
                         <p className="font-risque text-sm text-gray-400 dark:text-gray-400">
                           <a
-                            href="https://twitter.com/leippass/status/announcement"
+                            href="https://x.com/LeipPass/status/1910020681741299714"
                             target="_blank"
                             rel="noopener noreferrer"
                             className="text-blue-400 hover:underline dark:text-blue-400"
@@ -319,7 +319,7 @@ export default function WaitlistForm() {
                           >
                             Click here to retweet
                           </a>
-                          {timers.retweet > 0 && timers.retweet < 120 && (
+                          {timers.retweet > 0 && timers.retweet < 30 && (
                             <span className="text-xs text-gray-500 ml-2">(Verification in progress...)</span>
                           )}
                         </p>
@@ -357,7 +357,7 @@ export default function WaitlistForm() {
                             >
                               Click here to tweet and tag friends
                             </a>
-                            {timers.tagFriends > 0 && timers.tagFriends < 120 && (
+                            {timers.tagFriends > 0 && timers.tagFriends < 30 && (
                               <span className="text-xs text-gray-500 ml-2">(Verification in progress...)</span>
                             )}
                           </p>
