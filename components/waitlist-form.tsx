@@ -54,7 +54,7 @@ export default function WaitlistForm() {
   const [error, setError] = useState("")
 
   const tweetText =
-    "My signature tweet for the #Leipass Waitlist. @Leippass is building the first computing AI-powered social fi  on #LensChain. Join in let's Unlock A New Era"
+    "My signature tweet for the #Leipass Waitlist. @Leippass is building the first computing AI-powered social fi  on #LensChain. \nJoin https://guild.xyz/leippass/ to gain beta access"
 
   const getReferralLink = () => {
     const protocol = typeof window !== "undefined" ? window.location.protocol : "https:"
