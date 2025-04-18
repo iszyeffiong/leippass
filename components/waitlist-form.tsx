@@ -311,7 +311,7 @@ export default function WaitlistForm() {
                         </Label>
                         <p className="font-risque text-sm text-gray-400 dark:text-gray-400">
                           <a
-                            href="https://x.com/LeipPass/status/1912280696346771954"
+                            href="https://x.com/LeipPass/status/1913159700708831676"
                             target="_blank"
                             rel="noopener noreferrer"
                             className="text-blue-400 hover:underline dark:text-blue-400"
